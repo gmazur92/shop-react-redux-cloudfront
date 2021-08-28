@@ -18,7 +18,7 @@ plugins:
 
 custom:
   client:
-    bucketName: socks-shop-task2-finch
+    bucketName: shop-task-3
     distributionFolder: build
   s3BucketName: ${self:custom.client.bucketName}
 
@@ -47,16 +47,12 @@ resources:
           Ref: WebAppS3Bucket
         PolicyDocument:
           Statement:
-            - Sid: 'AllowCloudFrontAccessIdentity'
+            - Sid: PublicReadGetObject
               Effect: Allow
-              Action: s3:GetObject
+              Principal: "*"
+              Action:
+                - s3:GetObject
               Resource: arn:aws:s3:::${self:custom.s3BucketName}/*
-              Principal:
-                AWS:
-                  Fn::Join:
-                    - ' '
-                    - - 'arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity'
-                      - !Ref OriginAccessIdentity
 
     OriginAccessIdentity:
       Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
