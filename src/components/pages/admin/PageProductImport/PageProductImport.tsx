@@ -15,6 +15,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function PageProductImport() {
   const classes = useStyles();
+  localStorage.setItem('authorization_token', 'Z21henVyOTI6VEVTVF9QQVNTV09SRA==')
 
   return (
     <div className={classes.content}>

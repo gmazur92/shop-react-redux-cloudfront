@@ -8,16 +8,20 @@ import * as serviceWorker from './serviceWorker';
 import CssBaseline from "@material-ui/core/CssBaseline";
 import axios from 'axios';
 
-axios.interceptors.response.use(
-  response => {
+axios.interceptors.response.use(response => {
     return response;
   },
-  function(error) {
-    if (error?.response?.status === 400) {
-      alert(error.response.data?.data);
+  function({ response }) {
+    if (response) {
+      const { status } = response;
+      if (status === 403) {
+        alert('Wrong credentials, unauthorized!');
+      }
+      if (status === 401) {
+        alert('Token is not set, unauthorized!');
+      }
     }
-
-    return Promise.reject(error?.response ?? error);
+    return Promise.reject(response);
   }
 );
 

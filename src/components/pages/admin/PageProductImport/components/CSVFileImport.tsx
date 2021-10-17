@@ -1,7 +1,7 @@
-import React, {useState} from 'react';
-import {makeStyles} from '@material-ui/core/styles';
-import Typography from "@material-ui/core/Typography";
-import axios from 'axios';
+import React, { useState } from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
+import axios, { AxiosRequestConfig } from 'axios';
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -20,8 +20,8 @@ export default function CSVFileImport({url, title}: CSVFileImportProps) {
 
   const onFileChange = (e: any) => {
     console.log(e);
-    let files = e.target.files || e.dataTransfer.files
-    if (!files.length) return
+    let files = e.target.files || e.dataTransfer.files;
+    if (!files.length) return;
     setFile(files.item(0));
   };
 
@@ -31,23 +31,35 @@ export default function CSVFileImport({url, title}: CSVFileImportProps) {
 
   const uploadFile = async (e: any) => {
       // Get the presigned URL
-      const response = await axios({
+      const token = localStorage.getItem('authorization_token');
+
+      const config = {
         method: 'GET',
         url,
         params: {
-          name: encodeURIComponent(file.name)
-        }
-      })
-      console.log('File to upload: ', file.name)
-      console.log('Uploading to: ', response.data)
+          name: encodeURIComponent(file.name),
+        },
+      } as AxiosRequestConfig;
+
+      if (token) {
+        config.headers = {
+          Authorization: `Basic ${localStorage.getItem('authorization_token')}`,
+        };
+      }
+
+      const response = await axios(config);
+
+      console.log('File to upload: ', file.name);
+      console.log('Uploading to: ', response.data);
+
       const result = await fetch(response.data.url, {
         method: 'PUT',
         headers: {
-          'Content-Type': 'text/csv'
+          'Content-Type': 'text/csv',
         },
-        body: file
-      })
-      console.log('Result: ', result)
+        body: file,
+      });
+      console.log('Result: ', result);
       setFile('');
     }
   ;
@@ -58,7 +70,7 @@ export default function CSVFileImport({url, title}: CSVFileImportProps) {
         {title}
       </Typography>
       {!file ? (
-          <input type="file" onChange={onFileChange}/>
+        <input type="file" onChange={onFileChange} />
       ) : (
         <div>
           <button onClick={removeFile}>Remove file</button>
